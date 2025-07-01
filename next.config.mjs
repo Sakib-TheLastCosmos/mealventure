@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
-  basePath: "/mealventure",
-  assetPrefix: "/mealventure", // <-- Add this line
-  trailingSlash: true,
-
   eslint: {
     ignoreDuringBuilds: true,
   },
