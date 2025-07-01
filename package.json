@@ -2,12 +2,12 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/Sakib-TheLastCosmos/mealventure",
+  "homepage": "https://Sakib-TheLastCosmos.github.io/mealventure",
   "scripts": {
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "build": "next build && next export",
+    "build": "next build",
     "deploy": "gh-pages -d out"
   },
   "dependencies": {

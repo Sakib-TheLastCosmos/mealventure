@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export", // Important for static HTML export
-  basePath: "/mealventure", // Subpath used by GitHub Pages
-  trailingSlash: true, // Required for GitHub Pages to serve routes correctly
+  output: "export",
+  basePath: "/mealventure",
+  assetPrefix: "/mealventure", // <-- Add this line
+  trailingSlash: true,
 
   eslint: {
     ignoreDuringBuilds: true,
@@ -11,7 +12,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true, // Needed because Next.js image optimization doesn't work in static mode
+    unoptimized: true,
   },
 };
 
