@@ -83,9 +83,7 @@ export default function SakibDashboard() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [daySettings, setDaySettings] = useState({
     dayBeginTime: "06:00",
-    dayEndTime: "22:00",
     dayBeginPoints: 10,
-    dayEndPoints: 10,
   });
 
   // Add loading and error states
@@ -121,7 +119,9 @@ export default function SakibDashboard() {
 
         // Get monthly data for progress charts
 
-        const monthly = await FirebaseService.getMonthlyData(new Date().getMonth());
+        const monthly = await FirebaseService.getMonthlyData(
+          new Date().getMonth()
+        );
         setMonthlyData(monthly);
 
         // Initialize meal templates
@@ -372,9 +372,7 @@ export default function SakibDashboard() {
       // Update today's data with new settings
       await FirebaseService.createOrUpdateDailyData({
         dayBeginTime: daySettings.dayBeginTime,
-        dayEndTime: daySettings.dayEndTime,
         dayBeginPoints: daySettings.dayBeginPoints,
-        dayEndPoints: daySettings.dayEndPoints,
       });
     } catch (error) {
       console.error("Error updating day settings:", error);
@@ -778,34 +776,6 @@ export default function SakibDashboard() {
                         setDaySettings({
                           ...daySettings,
                           dayBeginPoints: Number.parseInt(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="day-end-time">Day End Time</Label>
-                    <Input
-                      id="day-end-time"
-                      type="time"
-                      value={daySettings.dayEndTime}
-                      onChange={(e) =>
-                        setDaySettings({
-                          ...daySettings,
-                          dayEndTime: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="day-end-points">Day End Points</Label>
-                    <Input
-                      id="day-end-points"
-                      type="number"
-                      value={daySettings.dayEndPoints}
-                      onChange={(e) =>
-                        setDaySettings({
-                          ...daySettings,
-                          dayEndPoints: Number.parseInt(e.target.value),
                         })
                       }
                     />

@@ -157,14 +157,6 @@ export default function RuqaiyahDashboard() {
           Number.parseInt(meal.scheduledTime.split(":")[1]),
         name: meal.name,
       })),
-      {
-        id: "day-end",
-        time: (() => {
-          const [hours, minutes] = dailyData.dayEndTime.split(":").map(Number);
-          return hours * 60 + minutes;
-        })(),
-        name: "Day End",
-      },
     ].sort((a, b) => a.time - b.time);
 
     // Find current checkpoint
@@ -193,16 +185,72 @@ export default function RuqaiyahDashboard() {
   };
 
   const calculateStreak = () => {
-    // This would calculate based on historical data
-    return 5; // Placeholder
+    // Calculate based on historical data
+    let streak = 0;
+    const sortedData = historicalData.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    console.log(sortedData);
+
+    const today = new Date().toLocaleDateString("en-CA");
+
+    for (const day of sortedData) {
+      if (day.date != today) {
+        const completedMeals = day.meals.filter(
+          (m) =>
+            m.status === "completed-on-time" || m.status === "completed-late"
+        );
+        if (
+          completedMeals.length === day.meals.length &&
+          day.meals.length > 0
+        ) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return streak;
   };
 
+  // const calculatePunctuality = () => {
+  //   if (!dailyData?.meals.length) return 0;
+  //   const completedOnTime = dailyData.meals.filter(
+  //     (m) => m.status === "completed-on-time"
+  //   ).length;
+  //   return Math.round((completedOnTime / dailyData.meals.length) * 100);
+  // };
+
   const calculatePunctuality = () => {
-    if (!dailyData?.meals.length) return 0;
-    const completedOnTime = dailyData.meals.filter(
-      (m) => m.status === "completed-on-time"
-    ).length;
-    return Math.round((completedOnTime / dailyData.meals.length) * 100);
+    // Calculate based on historical data
+    let streak = 0;
+    const sortedData = historicalData.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    console.log(sortedData);
+
+    const today = new Date().toLocaleDateString("en-CA");
+
+    let onTime = 0;
+    let total = 0;
+    for (const day of sortedData) {
+      if (day.date != today) {
+        total += day.meals.length;
+
+        day.meals.forEach((meal) => {
+          if (meal.status == "completed-on-time") {
+            onTime++;
+          }
+        });
+      }
+    }
+
+    const percentage = Math.round((onTime / total) * 100);
+
+    return percentage;
   };
 
   const handleArchiveDateSelect = async (date: string) => {
@@ -290,6 +338,22 @@ export default function RuqaiyahDashboard() {
 
   if (!dailyData) {
     return <LoadingScreen user="ruqaiyah" message="Almost ready..." />;
+  }
+
+  const dayBegin = {
+    id: "0",
+    points: dailyData.dayBeginPoints,
+    reason: "Day Begin",
+    timestamp: "0",
+  };
+
+  let found = false;
+  dailyData.bonusPoints.forEach((bonus) => {
+    if (bonus.id == "0") found = true;
+  });
+
+  if (!found) {
+    dailyData.bonusPoints.push(dayBegin);
   }
 
   return (
@@ -553,38 +617,6 @@ export default function RuqaiyahDashboard() {
                               </div>
                             ),
                           })),
-                          {
-                            id: "day-end",
-                            time: (() => {
-                              const [hours, minutes] = dailyData.dayEndTime
-                                .split(":")
-                                .map(Number);
-                              return hours * 60 + minutes;
-                            })(),
-                            type: "system",
-                            component: (
-                              <div className="relative flex items-center">
-                                <div className="relative z-10 p-3 rounded-full border-4 border-white bg-gradient-to-r from-purple-100 to-indigo-100 shadow-lg">
-                                  <Heart className="h-6 w-6 text-purple-500" />
-                                </div>
-                                <div className="ml-6 flex-1">
-                                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200 shadow-sm">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h3 className="font-semibold text-lg text-gray-800">
-                                        Day End
-                                      </h3>
-                                      <span className="text-sm text-gray-500">
-                                        {dailyData.dayEndTime}
-                                      </span>
-                                    </div>
-                                    <Badge className="bg-purple-100 text-purple-700 border-purple-300">
-                                      +{dailyData.dayEndPoints} points
-                                    </Badge>
-                                  </div>
-                                </div>
-                              </div>
-                            ),
-                          },
                         ].sort((a, b) => a.time - b.time);
 
                         // Find where to insert "You are here" indicator

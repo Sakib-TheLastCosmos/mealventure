@@ -37,9 +37,7 @@ export class FirebaseService {
       // Default settings
       const defaultSettings: DaySettings = {
         dayBeginTime: "06:00",
-        dayEndTime: "22:00",
         dayBeginPoints: 10,
-        dayEndPoints: 10,
       };
 
       await setDoc(docRef, defaultSettings);
@@ -48,9 +46,7 @@ export class FirebaseService {
       console.error("Error getting day settings:", error);
       return {
         dayBeginTime: "06:00",
-        dayEndTime: "22:00",
         dayBeginPoints: 10,
-        dayEndPoints: 10,
       };
     }
   }
@@ -69,13 +65,6 @@ export class FirebaseService {
             ...template,
             scheduledTime: settings.dayBeginTime,
             pointsOnTime: settings.dayBeginPoints,
-          };
-        }
-        if (template.id === "day-end") {
-          return {
-            ...template,
-            scheduledTime: settings.dayEndTime,
-            pointsOnTime: settings.dayEndPoints,
           };
         }
         return template;
@@ -568,9 +557,7 @@ export class FirebaseService {
       0
     );
 
-    return (
-      dailyData.dayBeginPoints + mealPoints + bonus + dailyData.dayEndPoints
-    );
+    return dailyData.dayBeginPoints + mealPoints + bonus;
   }
 
   // Create or update daily data
@@ -584,14 +571,26 @@ export class FirebaseService {
       const defaultData = {
         date: today,
         dayBeginPoints: daySettings.dayBeginPoints,
-        dayEndPoints: daySettings.dayEndPoints,
         dayBeginTime: daySettings.dayBeginTime,
-        dayEndTime: daySettings.dayEndTime,
         noteOfTheDay: "",
         meals: [],
         bonusPoints: [],
-        totalPoints: daySettings.dayBeginPoints + daySettings.dayEndPoints,
+        totalPoints: daySettings.dayBeginPoints,
       };
+
+      // let beginDate = new Date()
+      // beginDate.setHours(parseInt(daySettings.dayBeginTime.slice(0, 2)))
+      // beginDate.setMinutes(parseInt(daySettings.dayBeginTime.slice(2, 2)))
+      // beginDate.setSeconds(0);
+
+      // const dayBegin = {
+      //   id: beginDate.toString(),
+      //   points: daySettings.dayBeginPoints,
+      //   reason: "Day Begin",
+      //   timestamps: beginDate.toLocaleDateString("en-CA")
+      // }
+
+      // defaultData.bonusPoints.push(dayBegin)
 
       let existingData = defaultData;
       if (docSnap.exists()) {
@@ -856,16 +855,14 @@ export class FirebaseService {
         id: date,
         date: date,
         dayBeginPoints: daySettings.dayBeginPoints,
-        dayEndPoints: daySettings.dayEndPoints,
         dayBeginTime: daySettings.dayBeginTime,
-        dayEndTime: daySettings.dayEndTime,
         noteOfTheDay:
           date === new Date().toLocaleDateString("en-CA").split("T")[0]
             ? "Have a wonderful day, my love! 💕"
             : "",
         meals: activeMeals,
         bonusPoints: [],
-        totalPoints: daySettings.dayBeginPoints + daySettings.dayEndPoints,
+        totalPoints: daySettings.dayBeginPoints,
       };
 
       // Always set the document, even if it exists
@@ -990,17 +987,6 @@ export class FirebaseService {
             order: 3,
             active: true,
             type: "meal",
-          },
-          {
-            id: "day-end",
-            name: "Day End",
-            scheduledTime: daySettings.dayEndTime,
-            pointsOnTime: daySettings.dayEndPoints,
-            pointsLate: 0,
-            penaltySkipped: 0,
-            order: 99,
-            active: true,
-            type: "day-end",
           },
         ];
 
